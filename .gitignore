@@ -1,0 +1,14 @@
+# Arquivos de Sistema e Python
+__pycache__/
+*.pyc
+.DS_Store
+venv/
+env/
+.venv/
+
+# Credenciais do Google (EXTREMAMENTE IMPORTANTE: NÃO FAZER UPLOAD)
+credenciais.json
+
+# Arquivos de utilidade temporária
+screenshot.py
+dashboard.png
