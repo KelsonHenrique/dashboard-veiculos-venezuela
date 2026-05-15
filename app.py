@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2.service_account import Credentials
+import json
 
 # Configuração da página
 st.set_page_config(page_title="Dashboard de Vendas de Veículos", layout="wide", initial_sidebar_state="collapsed")
@@ -139,7 +140,20 @@ def load_data():
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
     ]
-    creds = Credentials.from_service_account_file("credenciais.json", scopes=scopes)
+    
+    # Lógica híbrida: Nuvem (Streamlit Secrets) vs Local (credenciais.json)
+    try:
+        if "google_credentials_json" in st.secrets:
+            # Rodando na nuvem (lê a secret em formato string JSON)
+            creds_info = json.loads(st.secrets["google_credentials_json"])
+            creds = Credentials.from_service_account_info(creds_info, scopes=scopes)
+        else:
+            # Fallback para rodar localmente com o arquivo físico
+            creds = Credentials.from_service_account_file("credenciais.json", scopes=scopes)
+    except Exception:
+        # Último recurso se secrets der erro, tenta o arquivo
+        creds = Credentials.from_service_account_file("credenciais.json", scopes=scopes)
+        
     client = gspread.authorize(creds)
     
     # Acessar a planilha e aba corretas
